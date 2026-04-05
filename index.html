@@ -1,0 +1,1083 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes, viewport-fit=cover" />
+<title>Kasir Dewi PRO - Auto Sync</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+<style>
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+:root {
+  --primary: #3b82f6;
+  --primary-dark: #2563eb;
+  --primary-soft: #eff6ff;
+  --success: #10b981;
+  --success-dark: #059669;
+  --danger: #ef4444;
+  --danger-dark: #dc2626;
+  --warning: #f59e0b;
+  --warning-dark: #d97706;
+  --gray-50: #f9fafb;
+  --gray-100: #f3f4f6;
+  --gray-200: #e5e7eb;
+  --gray-300: #d1d5db;
+  --gray-600: #4b5563;
+  --gray-700: #374151;
+  --gray-800: #1f2937;
+  --gray-900: #111827;
+  --white: #ffffff;
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  --radius-xl: 1rem;
+  --radius-2xl: 1.25rem;
+}
+
+body {
+  font-family: 'Inter', sans-serif;
+  background: var(--gray-50);
+  color: var(--gray-900);
+  transition: background 0.3s, color 0.2s;
+}
+
+body.dark-mode {
+  --gray-50: #0f172a;
+  --gray-100: #1e293b;
+  --gray-200: #334155;
+  --gray-300: #475569;
+  --gray-600: #94a3b8;
+  --gray-700: #cbd5e1;
+  --gray-800: #e2e8f0;
+  --gray-900: #f1f5f9;
+  --white: #1e293b;
+  --primary-soft: #1e293b;
+  background: #0f172a;
+}
+
+.sidebar {
+  width: 280px;
+  background: var(--white);
+  border-right: 1px solid var(--gray-200);
+  position: fixed;
+  left: 0;
+  top: 0;
+  height: 100vh;
+  z-index: 1000;
+  transition: width 0.2s;
+  overflow-y: auto;
+}
+
+.sidebar-header {
+  padding: 1.75rem 1.5rem;
+  border-bottom: 1px solid var(--gray-200);
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.sidebar-header i {
+  font-size: 1.8rem;
+  color: var(--primary);
+  background: var(--primary-soft);
+  padding: 8px;
+  border-radius: 14px;
+}
+
+.sidebar-header h2 {
+  font-size: 1.3rem;
+  font-weight: 700;
+  background: linear-gradient(135deg, var(--primary) 0%, #8b5cf6 100%);
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+}
+
+.sidebar-menu {
+  padding: 1.5rem 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.menu-item {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.85rem 1.2rem;
+  border-radius: 1rem;
+  font-weight: 500;
+  font-size: 0.95rem;
+  color: var(--gray-700);
+  transition: all 0.2s;
+  cursor: pointer;
+  background: transparent;
+  width: 100%;
+  text-align: left;
+  border: none;
+}
+
+.menu-item i {
+  width: 1.5rem;
+  font-size: 1.2rem;
+}
+
+.menu-item:hover {
+  background: var(--gray-100);
+  color: var(--primary);
+  transform: translateX(4px);
+}
+
+.menu-item.active {
+  background: var(--primary);
+  color: white;
+  box-shadow: var(--shadow-md);
+}
+
+.main-wrapper {
+  margin-left: 280px;
+  flex: 1;
+  min-height: 100vh;
+  width: calc(100% - 280px);
+}
+
+.top-header {
+  background: var(--white);
+  border-bottom: 1px solid var(--gray-200);
+  padding: 0.9rem 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: sticky;
+  top: 0;
+  z-index: 99;
+  box-shadow: var(--shadow-sm);
+}
+
+.header-left h1 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  background: linear-gradient(120deg, var(--primary), #4f46e5);
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+}
+
+.theme-toggle {
+  background: var(--gray-100);
+  border: 1px solid var(--gray-200);
+  padding: 0.6rem 1rem;
+  border-radius: 2rem;
+  cursor: pointer;
+  color: var(--gray-800);
+  font-size: 0.9rem;
+}
+
+.content {
+  padding: 1.8rem 2rem;
+  flex: 1;
+}
+
+.tab-content {
+  display: none;
+  animation: fadeUp 0.3s ease-out;
+}
+
+.tab-content.active {
+  display: block;
+}
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.content-header {
+  margin-bottom: 1.5rem;
+}
+
+.content-header h2 {
+  font-size: 1.6rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.card {
+  background: var(--white);
+  border-radius: var(--radius-2xl);
+  padding: 1.5rem;
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--gray-200);
+  margin-bottom: 1.8rem;
+}
+
+.input-group {
+  margin-bottom: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.input-group label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--gray-600);
+}
+
+input, textarea {
+  width: 100%;
+  padding: 0.85rem 1rem;
+  border-radius: 1rem;
+  border: 1.5px solid var(--gray-200);
+  background: var(--white);
+  font-family: 'Inter', monospace;
+  font-size: 0.95rem;
+  color: var(--gray-900);
+}
+
+input:focus, textarea:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+}
+
+.btn {
+  padding: 0.75rem 1.25rem;
+  border-radius: 1rem;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  cursor: pointer;
+  font-size: 0.85rem;
+  border: none;
+}
+
+.btn-primary { background: var(--primary); color: white; }
+.btn-primary:hover { background: var(--primary-dark); }
+.btn-success { background: var(--success); color: white; }
+.btn-success:hover { background: var(--success-dark); }
+.btn-danger { background: var(--danger); color: white; }
+.btn-warning { background: var(--warning); color: white; }
+.btn-outline-sm {
+  background: transparent;
+  border: 1px solid var(--gray-300);
+  padding: 0.3rem 0.8rem;
+  font-size: 0.7rem;
+  border-radius: 2rem;
+  cursor: pointer;
+}
+.btn-outline-sm:hover { background: var(--gray-100); }
+
+.list-premium {
+  list-style: none;
+  margin-top: 1rem;
+  border-radius: 1rem;
+  border: 1px solid var(--gray-200);
+  max-height: 320px;
+  overflow-y: auto;
+}
+
+.list-premium li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 1.2rem;
+  border-bottom: 1px solid var(--gray-200);
+  background: var(--white);
+  gap: 0.8rem;
+  flex-wrap: wrap;
+}
+
+.list-premium li:last-child { border-bottom: none; }
+
+.item-badge {
+  background: var(--gray-100);
+  padding: 0.2rem 0.7rem;
+  border-radius: 2rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.total-price {
+  font-size: 2rem;
+  font-weight: 800;
+  color: var(--primary);
+  margin: 1rem 0;
+  padding: 0.5rem;
+  background: var(--primary-soft);
+  border-radius: 1rem;
+  text-align: center;
+}
+
+.grid-2col {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+.kembalian-box { margin-top: 0.8rem; font-weight: 600; }
+
+.toast {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background: var(--gray-800);
+  color: white;
+  padding: 12px 20px;
+  border-radius: 12px;
+  font-size: 0.85rem;
+  z-index: 2000;
+  animation: slideIn 0.3s ease;
+}
+
+.toast.success { background: #10b981; }
+.toast.error { background: #ef4444; }
+.toast.info { background: #3b82f6; }
+.toast.sync { background: #8b5cf6; }
+
+@keyframes slideIn {
+  from { transform: translateX(100%); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}
+
+.modal {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.5);
+  z-index: 1001;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal-content {
+  background: var(--white);
+  border-radius: 1.5rem;
+  padding: 1.5rem;
+  width: 90%;
+  max-width: 500px;
+}
+
+.sync-status {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  margin-left: 8px;
+}
+
+.sync-status.connected { background: #10b981; box-shadow: 0 0 5px #10b981; }
+.sync-status.disconnected { background: #ef4444; }
+.sync-status.syncing { background: #f59e0b; animation: pulse 1s infinite; }
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+@media (max-width: 780px) {
+  .sidebar { width: 70px; }
+  .sidebar-header h2 { display: none; }
+  .sidebar-header i { margin: 0 auto; }
+  .sidebar-header { justify-content: center; padding: 1rem 0.5rem; }
+  .menu-item span { display: none; }
+  .menu-item { justify-content: center; padding: 0.8rem; }
+  .main-wrapper { margin-left: 70px; width: calc(100% - 70px); }
+  .grid-2col { grid-template-columns: 1fr; }
+  .content { padding: 1rem; }
+  .card { padding: 1rem; }
+}
+</style>
+</head>
+<body>
+<aside class="sidebar">
+  <div class="sidebar-header">
+    <i class="fas fa-cash-register"></i>
+    <h2>Kasir Dewi PRO</h2>
+  </div>
+  <nav class="sidebar-menu">
+    <button class="menu-item active" data-tab="barang"><i class="fas fa-box"></i><span>Data Barang</span></button>
+    <button class="menu-item" data-tab="transaksi"><i class="fas fa-shopping-cart"></i><span>Transaksi</span></button>
+    <button class="menu-item" data-tab="hutang"><i class="fas fa-file-invoice-dollar"></i><span>Hutang</span></button>
+    <button class="menu-item" data-tab="riwayat"><i class="fas fa-history"></i><span>Riwayat</span></button>
+  </nav>
+</aside>
+
+<div class="main-wrapper">
+  <header class="top-header">
+    <div class="header-left">
+      <h1><i class="fas fa-store"></i> Dewi Mart · Auto Sync Google Sheets</h1>
+    </div>
+    <div class="header-right">
+      <span id="syncIndicator" style="display: flex; align-items: center; gap: 8px; margin-right: 15px;">
+        <span class="sync-status disconnected" id="syncStatusDot"></span>
+        <span id="syncStatusText" style="font-size: 0.75rem;">Menyambungkan...</span>
+      </span>
+      <button class="theme-toggle" id="theme-toggle"><i class="fas fa-moon"></i> Darkmode</button>
+    </div>
+  </header>
+  <main class="content">
+    <!-- TAB BARANG -->
+    <section class="tab-content active" id="barang">
+      <div class="content-header"><h2><i class="fas fa-boxes"></i> Manajemen Stok</h2></div>
+      
+      <div class="card">
+        <div class="input-group"><label><i class="fas fa-search"></i> Cari Barang</label><input type="text" id="searchBarang" placeholder="Nama barang..."></div>
+        <ul class="list-premium" id="listBarang"></ul>
+      </div>
+      
+      <div class="card">
+        <div class="input-group"><label><i class="fas fa-bolt"></i> Tambah Cepat (nama jumlahTipe harga)</label><input type="text" id="quickBarang" placeholder="Contoh: beras 20kg 2000" onkeydown="if(event.key==='Enter') tambahBarangCepat()"></div>
+        <button class="btn btn-success" onclick="tambahBarangCepat()"><i class="fas fa-plus-circle"></i> Tambah Cepat</button>
+      </div>
+      
+      <div class="card">
+        <div class="grid-2col">
+          <div class="input-group"><label>Nama Barang</label><input id="nama" placeholder="Nama produk"></div>
+          <div class="input-group"><label>Tipe</label><input id="tipe" placeholder="kg / pcs / pack"></div>
+          <div class="input-group"><label>Stok</label><input id="stok" type="number" placeholder="Jumlah"></div>
+          <div class="input-group"><label>Harga (Rp)</label><input id="harga" type="number" placeholder="Harga satuan"></div>
+        </div>
+        <button class="btn btn-primary" onclick="tambahBarangManual()"><i class="fas fa-save"></i> Tambah Manual</button>
+      </div>
+      
+      <div class="card">
+        <div class="input-group">
+          <label><i class="fas fa-layer-group"></i> Input Banyak Barang</label>
+          <textarea id="multiBarangInputBarang" rows="5" placeholder="Contoh:
+beras 20kg 2000
+gula 10kg 15000
+susu 50pcs 12000"></textarea>
+        </div>
+        <button class="btn btn-primary" onclick="tambahMultiBarangBarang()"><i class="fas fa-plus-circle"></i> Tambah Semua</button>
+      </div>
+    </section>
+
+    <!-- TAB TRANSAKSI -->
+    <section class="tab-content" id="transaksi">
+      <div class="content-header"><h2><i class="fas fa-cash-register"></i> Kasir Pintar</h2></div>
+      
+      <div id="editTransaksiModal" class="modal">
+        <div class="modal-content">
+          <h3>✏️ Edit Item</h3>
+          <input type="text" id="editNama" placeholder="Nama Barang" style="width:100%; margin:10px 0; padding:8px;">
+          <input type="number" id="editQty" placeholder="Jumlah" style="width:100%; margin:10px 0; padding:8px;">
+          <div style="display:flex; gap:10px;">
+            <button id="saveEditBtn" class="btn btn-primary" style="flex:1;">Simpan</button>
+            <button id="cancelEditBtn" class="btn-outline-sm" style="flex:1;">Batal</button>
+          </div>
+        </div>
+      </div>
+      
+      <div class="card">
+        <div class="input-group"><label><i class="fas fa-search"></i> Cari Barang</label><input type="text" id="searchBarangTransaksi" placeholder="Ketik nama barang..."></div>
+        <div id="suggestBarang" style="margin-bottom: 12px; display: flex; flex-wrap: wrap; gap: 8px;"></div>
+        <div class="input-group"><label><i class="fas fa-cart-plus"></i> Manual: namaBarang jumlah</label><input id="transaksiInput" placeholder="Contoh: beras 2.5" onkeydown="if(event.key==='Enter') tambahTransaksiManual()"></div>
+        <button class="btn btn-primary" onclick="tambahTransaksiManual()"><i class="fas fa-plus"></i> Tambah ke Keranjang</button>
+        
+        <div class="input-group" style="margin-top: 10px;">
+          <label><i class="fas fa-layer-group"></i> Input Banyak Barang</label>
+          <textarea id="multiBarangInput" rows="3" placeholder="beras 2.5&#10;susu 3&#10;telur 10"></textarea>
+        </div>
+        <button class="btn btn-primary" onclick="tambahMultiBarang()"><i class="fas fa-plus-circle"></i> Tambah Semua</button>
+        
+        <ul class="list-premium" id="listTransaksi"></ul>
+        <div class="total-price" id="total">Rp0</div>
+        <div class="input-group"><label>Nominal Bayar (Rp)</label><input type="number" id="inputBayar" placeholder="Masukkan uang customer" oninput="hitungKembalian()"></div>
+        <div id="kembalian" class="kembalian-box"></div>
+        <button class="btn btn-success" onclick="prosesPembayaran()"><i class="fas fa-check-circle"></i> Proses Bayar</button>
+      </div>
+    </section>
+
+    <!-- TAB HUTANG -->
+    <section class="tab-content" id="hutang">
+      <div class="content-header"><h2><i class="fas fa-hand-holding-usd"></i> Piutang Pelanggan</h2></div>
+      <div class="card">
+        <div class="input-group"><label><i class="fas fa-user"></i> Nama Pelanggan</label><input id="namaPelanggan" placeholder="Masukkan nama lengkap"></div>
+        <button class="btn btn-warning" onclick="simpanHutangManual()"><i class="fas fa-bookmark"></i> Catat Hutang Manual</button>
+        <ul class="list-premium" id="listHutang" style="margin-top:20px;"></ul>
+      </div>
+    </section>
+
+    <!-- TAB RIWAYAT -->
+    <section class="tab-content" id="riwayat">
+      <div class="content-header"><h2><i class="fas fa-clock"></i> Log Transaksi & Hutang</h2></div>
+      <div class="card">
+        <button class="btn btn-danger" onclick="hapusSemuaRiwayat()"><i class="fas fa-trash-alt"></i> Hapus Semua Riwayat</button>
+        <ul class="list-premium" id="riwayat" style="margin-top:20px;"></ul>
+      </div>
+    </section>
+  </main>
+</div>
+
+<script>
+// ==================== SCRIPT URL (HARDCODE - GANTI DENGAN URL ANDA) ====================
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxhMZWcuKbaFnZV5TiC_rs0Uw_kYcUw6ScpKKyYx8GoZRMPavIvqxmh5Io37BSjMmVm/exec";
+// ================================================================================
+
+let isSyncing = false;
+let syncQueue = [];
+
+// ==================== DATA STORAGE ====================
+let barang = JSON.parse(localStorage.getItem('barang')) || [];
+let transaksi = [];
+let hutang = JSON.parse(localStorage.getItem('hutang')) || [];
+let riwayat = JSON.parse(localStorage.getItem('riwayat')) || [];
+
+// ==================== FUNGSI GOOGLE SHEETS SYNC ====================
+function updateSyncStatus(connected, message) {
+  const dot = document.getElementById('syncStatusDot');
+  const text = document.getElementById('syncStatusText');
+  if (dot) dot.className = `sync-status ${connected ? 'connected' : 'disconnected'}`;
+  if (text) text.innerText = message || (connected ? 'Tersinkronisasi' : 'Gagal Sync');
+}
+
+function showToast(message, type = 'info') {
+  const toast = document.createElement('div');
+  toast.className = `toast ${type}`;
+  toast.innerHTML = `<i class="fas ${type === 'success' ? 'fa-check-circle' : type === 'error' ? 'fa-exclamation-circle' : 'fa-sync-alt'}"></i> ${message}`;
+  document.body.appendChild(toast);
+  setTimeout(() => toast.remove(), 3000);
+}
+
+async function syncToGoogleSheets(dataType, data, action = 'append') {
+  if (!SCRIPT_URL) return false;
+
+  if (isSyncing) {
+    syncQueue.push({ dataType, data, action });
+    return false;
+  }
+
+  isSyncing = true;
+  const dot = document.getElementById('syncStatusDot');
+  if (dot) dot.className = 'sync-status syncing';
+
+  try {
+    const payload = {
+      action,
+      dataType,
+      data,
+      timestamp: new Date().toISOString()
+    };
+
+    const url =
+      SCRIPT_URL +
+      "?action=" + encodeURIComponent(action) +
+      "&dataType=" + encodeURIComponent(dataType) +
+      "&data=" + encodeURIComponent(JSON.stringify(data));
+
+    await fetch(url, {
+      method: "GET",
+      mode: "no-cors"
+    });
+
+    // karena no-cors, kita anggap sukses
+    if (dot) dot.className = 'sync-status connected';
+    updateSyncStatus(true, 'Tersinkronisasi');
+
+    return true;
+
+  } catch (error) {
+    console.error('Sync error:', error);
+    if (dot) dot.className = 'sync-status disconnected';
+    updateSyncStatus(false, 'Gagal Sync');
+    return false;
+  } finally {
+    isSyncing = false;
+
+    if (syncQueue.length > 0) {
+      const next = syncQueue.shift();
+      setTimeout(() => syncToGoogleSheets(next.dataType, next.data, next.action), 1000);
+    }
+  }
+}
+
+async function syncBarang() {
+  await syncToGoogleSheets('barang', barang, 'overwrite');
+}
+
+async function syncRiwayatTransaksi(nota) {
+  await syncToGoogleSheets('riwayatTransaksi', nota, 'append');
+}
+
+async function syncHutang(hutangData) {
+  await syncToGoogleSheets('hutang', hutangData, 'append');
+}
+
+async function syncHutangLunas(hutangData) {
+  await syncToGoogleSheets('hutangLunas', hutangData, 'append');
+}
+
+async function syncRiwayatAktivitas(riwayatData, action = 'append') {
+  await syncToGoogleSheets('riwayat', riwayatData, action);
+}
+
+// ==================== FUNGSI UTAMA ====================
+function formatTanggal(date) {
+  const d = new Date(date);
+  return `${d.getDate().toString().padStart(2,'0')}/${(d.getMonth()+1).toString().padStart(2,'0')}/${d.getFullYear()} ${d.getHours().toString().padStart(2,'0')}:${d.getMinutes().toString().padStart(2,'0')}:${d.getSeconds().toString().padStart(2,'0')}`;
+}
+
+function formatRupiah(angka) {
+  if(isNaN(angka)) return 'Rp0';
+  return 'Rp' + angka.toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+}
+
+function saveLocal() {
+  localStorage.setItem('barang', JSON.stringify(barang));
+  localStorage.setItem('hutang', JSON.stringify(hutang));
+  localStorage.setItem('riwayat', JSON.stringify(riwayat));
+  
+  // Auto sync ke Google Sheets
+  if (SCRIPT_URL) {
+    syncBarang();
+  }
+}
+
+function sortBarangAZ() {
+  barang.sort((a, b) => a.nama.toLowerCase().localeCompare(b.nama.toLowerCase()));
+}
+
+// ==================== MANAJEMEN BARANG ====================
+function tambahBarangCepat() {
+  let inputText = document.getElementById('quickBarang').value.trim();
+  if(!inputText) return;
+  let match = inputText.match(/^(.+?)\s+([\d.]+)([a-zA-Z]+)\s+([\d.]+)$/);
+  if(!match) {
+    alert('Format salah! Gunakan: namaBarang jumlahTipe harga');
+    return;
+  }
+  let nama = match[1].trim();
+  let jumlah = parseFloat(match[2]);
+  let tipe = match[3].trim();
+  let harga = parseFloat(match[4]);
+  
+  let barangExist = barang.find(b => b.nama.toLowerCase() === nama.toLowerCase());
+  if(barangExist) {
+    barangExist.stok += jumlah;
+    barangExist.harga = harga;
+    barangExist.tipe = tipe;
+    let nota = `${formatTanggal(new Date())} | 📦 TAMBAH STOK | ${nama} | +${jumlah}${tipe}`;
+    riwayat.push(nota);
+    syncRiwayatAktivitas(nota);
+  } else {
+    barang.push({nama, stok: jumlah, tipe, harga, tanggal: formatTanggal(new Date())});
+    let nota = `${formatTanggal(new Date())} | 🆕 BARANG BARU | ${nama} | ${jumlah}${tipe} | ${formatRupiah(harga)}`;
+    riwayat.push(nota);
+    syncRiwayatAktivitas(nota);
+  }
+  sortBarangAZ();
+  saveLocal();
+  render();
+  document.getElementById('quickBarang').value = '';
+  syncBarang();
+}
+
+function tambahBarangManual() {
+  const nama = document.getElementById('nama').value.trim();
+  const stok = parseFloat(document.getElementById('stok').value);
+  const tipe = document.getElementById('tipe').value.trim();
+  const harga = parseFloat(document.getElementById('harga').value);
+  if(!nama || isNaN(stok) || !tipe || isNaN(harga)) return alert('Lengkapi semua field!');
+  
+  let barangExist = barang.find(b => b.nama.toLowerCase() === nama.toLowerCase());
+  if(barangExist) {
+    barangExist.stok += stok;
+    barangExist.harga = harga;
+    barangExist.tipe = tipe;
+    let nota = `${formatTanggal(new Date())} | 📦 TAMBAH STOK | ${nama} | +${stok}${tipe}`;
+    riwayat.push(nota);
+    syncRiwayatAktivitas(nota);
+  } else {
+    barang.push({nama, stok, tipe, harga, tanggal: formatTanggal(new Date())});
+    let nota = `${formatTanggal(new Date())} | 🆕 BARANG BARU | ${nama} | ${stok}${tipe} | ${formatRupiah(harga)}`;
+    riwayat.push(nota);
+    syncRiwayatAktivitas(nota);
+  }
+  sortBarangAZ();
+  saveLocal();
+  render();
+  document.getElementById('nama').value = '';
+  document.getElementById('stok').value = '';
+  document.getElementById('tipe').value = '';
+  document.getElementById('harga').value = '';
+  syncBarang();
+}
+
+function hapusBarang(i) { 
+  barang.splice(i,1); 
+  sortBarangAZ();
+  saveLocal(); 
+  render();
+  syncBarang();
+}
+
+function editBarang(i) {
+  let b = barang[i];
+  let nama = prompt('Nama baru:', b.nama);
+  if(!nama) return;
+  let stok = parseFloat(prompt('Stok baru:', b.stok));
+  let tipe = prompt('Tipe baru:', b.tipe);
+  let harga = parseFloat(prompt('Harga baru:', b.harga));
+  barang[i] = {...b, nama, stok, tipe, harga};
+  sortBarangAZ();
+  saveLocal();
+  render();
+  syncBarang();
+}
+
+function tambahMultiBarangBarang() {
+  const textarea = document.getElementById('multiBarangInputBarang');
+  const lines = textarea.value.trim().split(/\r?\n/);
+  for(let line of lines) {
+    if(!line.trim()) continue;
+    let match = line.trim().match(/^(.+?)\s+([\d.]+)([a-zA-Z]+)\s+([\d.]+)$/);
+    if(match) {
+      let nama = match[1].trim();
+      let jumlah = parseFloat(match[2]);
+      let tipe = match[3].trim();
+      let harga = parseFloat(match[4]);
+      let barangExist = barang.find(b => b.nama.toLowerCase() === nama.toLowerCase());
+      if(barangExist) {
+        barangExist.stok += jumlah;
+        barangExist.harga = harga;
+        barangExist.tipe = tipe;
+      } else {
+        barang.push({nama, stok: jumlah, tipe, harga, tanggal: formatTanggal(new Date())});
+      }
+    }
+  }
+  sortBarangAZ();
+  saveLocal();
+  render();
+  textarea.value = '';
+  syncBarang();
+}
+
+// ==================== TRANSAKSI ====================
+function updateTransaksiDisplay() {
+  const listTrans = document.getElementById('listTransaksi');
+  if(!listTrans) return;
+  listTrans.innerHTML = '';
+  let total = 0;
+  transaksi.forEach((t, idx) => {
+    const sub = t.qty * t.harga;
+    total += sub;
+    const li = document.createElement('li');
+    li.innerHTML = `
+      <div><strong>${t.nama}</strong> x ${t.qty} ${t.tipe || ''}</div>
+      <div><span>${formatRupiah(sub)}</span>
+      <button class="btn-outline-sm" onclick="editTransaksi(${idx})"><i class="fas fa-pen"></i></button>
+      <button class="btn-outline-sm" onclick="hapusTransaksi(${idx})"><i class="fas fa-trash"></i></button></div>
+    `;
+    listTrans.appendChild(li);
+  });
+  document.getElementById('total').innerText = formatRupiah(total);
+  hitungKembalian();
+}
+
+function hitungKembalian() {
+  const total = parseFloat(document.getElementById('total').innerText.replace(/[^0-9]/g, '')) || 0;
+  const bayar = parseFloat(document.getElementById('inputBayar').value);
+  const kembalianEl = document.getElementById('kembalian');
+  if(isNaN(bayar)) { kembalianEl.innerHTML = ''; return; }
+  const selisih = bayar - total;
+  if(selisih >= 0) kembalianEl.innerHTML = `<span class="item-badge">✅ Kembalian: ${formatRupiah(selisih)}</span>`;
+  else kembalianEl.innerHTML = `<span class="item-badge" style="background:#fee2e2;">⚠️ Kurang: ${formatRupiah(Math.abs(selisih))}</span>`;
+}
+
+function tambahTransaksiManual() {
+  const raw = document.getElementById('transaksiInput').value.trim();
+  if(!raw) return;
+  const parts = raw.split(' ');
+  const nama = parts[0];
+  const qty = parseFloat(parts[1]);
+  const item = barang.find(b => b.nama.toLowerCase() === nama.toLowerCase());
+  if(!item) return alert('Barang tidak ditemukan!');
+  if(item.stok < qty) return alert(`Stok tidak cukup! Tersisa ${item.stok} ${item.tipe}`);
+  item.stok -= qty;
+  transaksi.push({nama: item.nama, qty, harga: item.harga, tipe: item.tipe});
+  document.getElementById('transaksiInput').value = '';
+  saveLocal();
+  render();
+  syncBarang();
+}
+
+function tambahMultiBarang() {
+  const textarea = document.getElementById('multiBarangInput');
+  const lines = textarea.value.trim().split(/\r?\n/);
+  for(let line of lines) {
+    if(!line.trim()) continue;
+    const parts = line.trim().split(' ');
+    const nama = parts[0];
+    const qty = parseFloat(parts[1]);
+    const item = barang.find(b => b.nama.toLowerCase() === nama.toLowerCase());
+    if(item && item.stok >= qty) {
+      item.stok -= qty;
+      transaksi.push({nama: item.nama, qty, harga: item.harga, tipe: item.tipe});
+    }
+  }
+  textarea.value = '';
+  saveLocal();
+  render();
+  syncBarang();
+}
+
+function hapusTransaksi(idx) {
+  const t = transaksi[idx];
+  const item = barang.find(b => b.nama === t.nama);
+  if(item) item.stok += t.qty;
+  transaksi.splice(idx, 1);
+  saveLocal();
+  render();
+  syncBarang();
+}
+
+function editTransaksi(index) {
+  const item = transaksi[index];
+  editIndexTemp = index;
+  document.getElementById('editNama').value = item.nama;
+  document.getElementById('editQty').value = item.qty;
+  document.getElementById('editTransaksiModal').style.display = 'flex';
+}
+
+let editIndexTemp = null;
+document.getElementById('saveEditBtn')?.addEventListener('click', () => {
+  if(editIndexTemp === null) return;
+  const newNama = document.getElementById('editNama').value.trim();
+  const newQty = parseFloat(document.getElementById('editQty').value);
+  const itemLama = transaksi[editIndexTemp];
+  const barangLama = barang.find(b => b.nama === itemLama.nama);
+  if(barangLama) barangLama.stok += itemLama.qty;
+  const barangBaru = barang.find(b => b.nama.toLowerCase() === newNama.toLowerCase());
+  if(barangBaru && barangBaru.stok >= newQty) {
+    barangBaru.stok -= newQty;
+    transaksi[editIndexTemp] = { nama: barangBaru.nama, qty: newQty, harga: barangBaru.harga, tipe: barangBaru.tipe };
+  }
+  document.getElementById('editTransaksiModal').style.display = 'none';
+  saveLocal();
+  render();
+  syncBarang();
+});
+
+document.getElementById('cancelEditBtn')?.addEventListener('click', () => {
+  document.getElementById('editTransaksiModal').style.display = 'none';
+});
+
+function prosesPembayaran() {
+  const total = parseFloat(document.getElementById('total').innerText.replace(/[^0-9]/g, '')) || 0;
+  if(total === 0) return alert('Tidak ada item!');
+  const bayar = parseFloat(document.getElementById('inputBayar').value);
+  if(isNaN(bayar)) return alert('Masukkan nominal bayar!');
+  
+  const itemList = transaksi.map(t => `${t.nama} x${t.qty}`).join(', ');
+  const selisih = bayar - total;
+  
+  if(selisih >= 0) {
+    const nota = `${formatTanggal(new Date())} | 💰 PEMBAYARAN | ${itemList} | ${formatRupiah(total)} | LUNAS | Bayar: ${formatRupiah(bayar)} | Kembali: ${formatRupiah(selisih)}`;
+    riwayat.push(nota);
+    syncRiwayatAktivitas(nota);
+    syncRiwayatTransaksi(nota);
+    alert(`✅ Transaksi sukses! Kembalian: ${formatRupiah(selisih)}`);
+  } else {
+    let namaPelanggan = prompt(`Pembayaran kurang ${formatRupiah(Math.abs(selisih))}\nMasukkan nama untuk hutang:`);
+    if(namaPelanggan && namaPelanggan.trim()) {
+      const hutangBaru = {
+        nama: namaPelanggan.trim(),
+        total: Math.abs(selisih),
+        tanggal: formatTanggal(new Date()),
+        keterangan: itemList.substring(0, 200)
+      };
+      hutang.push(hutangBaru);
+      const notaHutang = `${formatTanggal(new Date())} | 📋 HUTANG | ${namaPelanggan} | ${formatRupiah(Math.abs(selisih))} | dari: ${itemList.substring(0,100)}`;
+      riwayat.push(notaHutang);
+      syncRiwayatAktivitas(notaHutang);
+      syncHutang(hutangBaru);
+      alert(`Hutang ${namaPelanggan} tercatat!`);
+    }
+  }
+  
+  transaksi = [];
+  document.getElementById('inputBayar').value = '';
+  saveLocal();
+  render();
+}
+
+// ==================== HUTANG ====================
+function simpanHutangManual() {
+  const nama = document.getElementById('namaPelanggan').value.trim();
+  if(!nama) return alert('Masukkan nama!');
+  const nominal = prompt('Masukkan nominal hutang (Rp):');
+  if(nominal && !isNaN(parseFloat(nominal))) {
+    const hutangBaru = {
+      nama: nama,
+      total: parseFloat(nominal),
+      tanggal: formatTanggal(new Date()),
+      keterangan: 'Hutang manual'
+    };
+    hutang.push(hutangBaru);
+    const nota = `${formatTanggal(new Date())} | 📋 HUTANG MANUAL | ${nama} | ${formatRupiah(parseFloat(nominal))}`;
+    riwayat.push(nota);
+    saveLocal();
+    render();
+    syncRiwayatAktivitas(nota);
+    syncHutang(hutangBaru);
+    document.getElementById('namaPelanggan').value = '';
+  }
+}
+
+function hapusHutang(i) {
+  if(confirm(`Lunasi hutang ${hutang[i].nama} sebesar ${formatRupiah(hutang[i].total)}?`)) {
+    const nota = `${formatTanggal(new Date())} | ✅ PELUNASAN | ${hutang[i].nama} | ${formatRupiah(hutang[i].total)}`;
+    riwayat.push(nota);
+    const hutangLunasData = {...hutang[i], statusLunas: true, lunasTanggal: formatTanggal(new Date())};
+    hutang.splice(i,1);
+    saveLocal();
+    render();
+    syncRiwayatAktivitas(nota);
+    syncHutangLunas(hutangLunasData);
+  }
+}
+
+// ==================== RIWAYAT ====================
+function hapusRiwayat(i) {
+  riwayat.splice(i,1);
+  saveLocal();
+  render();
+  syncRiwayatAktivitas(riwayat, 'overwrite');
+}
+
+function hapusSemuaRiwayat() {
+  if(confirm('Hapus semua riwayat?')) {
+    riwayat = [];
+    saveLocal();
+    render();
+    syncRiwayatAktivitas(riwayat, 'overwrite');
+  }
+}
+
+// ==================== RENDER ====================
+function refreshSearchTransaksi() {
+  const keyword = document.getElementById('searchBarangTransaksi').value.toLowerCase();
+  const filtered = barang.filter(b => b.nama.toLowerCase().includes(keyword)).slice(0, 8);
+  const suggestDiv = document.getElementById('suggestBarang');
+  suggestDiv.innerHTML = '';
+  filtered.forEach(b => {
+    const chip = document.createElement('button');
+    chip.className = 'btn-outline-sm';
+    chip.innerHTML = `${b.nama} (${b.stok} ${b.tipe}) - ${formatRupiah(b.harga)}`;
+    chip.onclick = () => {
+      let qty = prompt(`Jumlah ${b.nama} (Stok: ${b.stok}):`, '1');
+      if(qty && parseFloat(qty) <= b.stok) {
+        b.stok -= parseFloat(qty);
+        transaksi.push({nama: b.nama, qty: parseFloat(qty), harga: b.harga, tipe: b.tipe});
+        saveLocal();
+        render();
+        syncBarang();
+      }
+    };
+    suggestDiv.appendChild(chip);
+  });
+}
+
+function render() {
+  sortBarangAZ();
+  
+  const searchTerm = document.getElementById('searchBarang')?.value.toLowerCase() || '';
+  const listBarangEl = document.getElementById('listBarang');
+  if(listBarangEl) {
+    listBarangEl.innerHTML = '';
+    barang.filter(b => b.nama.toLowerCase().includes(searchTerm)).forEach((b, idx) => {
+      const li = document.createElement('li');
+      li.innerHTML = `<div><strong>${b.nama}</strong> <span class="item-badge">${b.stok} ${b.tipe}</span></div>
+        <div><span>${formatRupiah(b.harga)}</span>
+        <button class="btn-outline-sm" onclick="editBarang(${idx})"><i class="fas fa-pen"></i></button>
+        <button class="btn-outline-sm" onclick="hapusBarang(${idx})"><i class="fas fa-trash"></i></button></div>`;
+      listBarangEl.appendChild(li);
+    });
+    if(barang.length === 0) listBarangEl.innerHTML = '<li style="text-align:center;">📦 Belum ada barang</li>';
+  }
+  
+  const hutangList = document.getElementById('listHutang');
+  if(hutangList) {
+    hutangList.innerHTML = '';
+    hutang.forEach((h, i) => {
+      const li = document.createElement('li');
+      li.innerHTML = `<span><i class="fas fa-user"></i> ${h.nama}</span><span>${formatRupiah(h.total)} <button class="btn-outline-sm" onclick="hapusHutang(${i})"><i class="fas fa-check"></i> Lunas</button></span>`;
+      hutangList.appendChild(li);
+    });
+    if(hutang.length === 0) hutangList.innerHTML = '<li style="text-align:center;">✨ Tidak ada hutang</li>';
+  }
+  
+  const riwayatList = document.getElementById('riwayat');
+  if(riwayatList) {
+    riwayatList.innerHTML = '';
+    if(riwayat.length === 0) {
+      riwayatList.innerHTML = '<li style="text-align:center;">📜 Belum ada aktivitas</li>';
+    } else {
+      [...riwayat].reverse().forEach((r, idx) => {
+        const li = document.createElement('li');
+        let icon = '📋';
+        if(r.includes('PEMBAYARAN')) icon = '💰';
+        else if(r.includes('HUTANG')) icon = '📌';
+        else if(r.includes('PELUNASAN')) icon = '✅';
+        else if(r.includes('BARANG BARU')) icon = '🆕';
+        else if(r.includes('TAMBAH STOK')) icon = '📦';
+        li.innerHTML = `<span>${icon} ${r}</span><button class="btn-outline-sm" onclick="hapusRiwayat(${riwayat.length - 1 - idx})"><i class="fas fa-trash"></i></button>`;
+        riwayatList.appendChild(li);
+      });
+    }
+  }
+  
+  updateTransaksiDisplay();
+  refreshSearchTransaksi();
+}
+
+// ==================== THEME & NAVIGASI ====================
+const themeToggle = document.getElementById('theme-toggle');
+themeToggle.onclick = () => {
+  document.body.classList.toggle('dark-mode');
+  const icon = themeToggle.querySelector('i');
+  if(document.body.classList.contains('dark-mode')) icon.classList.replace('fa-moon', 'fa-sun');
+  else icon.classList.replace('fa-sun', 'fa-moon');
+};
+
+document.querySelectorAll('.menu-item').forEach(btn => {
+  btn.onclick = () => {
+    document.querySelectorAll('.menu-item').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById(btn.dataset.tab).classList.add('active');
+    if(btn.dataset.tab === 'transaksi') refreshSearchTransaksi();
+  };
+});
+
+document.getElementById('searchBarangTransaksi')?.addEventListener('input', refreshSearchTransaksi);
+document.getElementById('searchBarang')?.addEventListener('input', () => render());
+
+// ==================== INISIALISASI ====================
+// Test koneksi awal
+setTimeout(() => {
+  fetch(SCRIPT_URL + '?test=1', { method: 'GET', mode: 'no-cors' })
+    .then(() => updateSyncStatus(true, 'Tersinkronisasi'))
+    .catch(() => updateSyncStatus(false, 'Cek URL & Deploy Apps Script'));
+}, 1000);
+
+render();
+</script>
+</body>
+</html>
